@@ -1,0 +1,1 @@
+countOccur("hello world", "o");

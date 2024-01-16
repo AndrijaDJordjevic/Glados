@@ -1,0 +1,12 @@
+.stack-work/
+*~
+*.prof
+*.hi
+glados
+test/coverage
+dist-newstyle
+.vscode
+vm-exe
+test.hs
+*.o
+vm/test

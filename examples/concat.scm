@@ -1,0 +1,1 @@
+concatStr("Hello", "World");
