@@ -1,0 +1,13 @@
+a = 5;
+b = 2;
+c = a;
+
+if (a == 4) {
+	print("no");
+}
+
+if (c == 8) {
+	print("no");
+} else {
+	print("yes");
+}

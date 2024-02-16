@@ -1,0 +1,10 @@
+func main(x) {
+	if (x == 5) {
+		print("yes");
+	} else {
+		print("no");
+	}
+}
+
+a = 5;
+main(a);

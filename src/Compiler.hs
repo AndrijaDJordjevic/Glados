@@ -18,7 +18,6 @@ module Compiler
     compileWhile,
     compileFor,
     compileReturn,
-    printCompilationResult,
     concatenateInstructions,
   )
 where
@@ -40,6 +39,7 @@ compile (FunctionDefinition name args body) = compileFunctionDefinition name arg
 compile (IfElse cond trueBranch falseBranch) = compileIfElse cond trueBranch falseBranch
 compile (While cond body) = compileWhile cond body
 compile (For first cond second) = compileFor first cond second
+compile (Print expr) = compilePrint expr
 compile (Return expr) = compileReturn expr
 
 compileConstant :: Constant -> [Instruction]
@@ -72,7 +72,7 @@ compileFunctionDefinition name args body = [IFuncDefStart name args] ++ compile 
 compileIfElse :: AST -> AST -> AST -> [Instruction]
 compileIfElse cond trueBranch falseBranch =
   compile cond
-    ++ [IJumpIfFalse $ length trueBranchCode + 1]
+    ++ [IJumpIfFalse $ length trueBranchCode + 2]
     ++ trueBranchCode
     ++ [IJump $ length falseBranchCode]
     ++ falseBranchCode
@@ -87,7 +87,6 @@ compileWhile cond body =
     ++ [IJumpIfFalse $ length bodyCode + 2]
     ++ bodyCode
     ++ [IJump $ -(length condCode + length bodyCode + 2)]
-    ++ [IEndLoop]
   where
     condCode = compile cond
     bodyCode = compile body
@@ -98,26 +97,5 @@ compileFor first cond second = compile first ++ compileWhile cond (Block [second
 compileReturn :: AST -> [Instruction]
 compileReturn expr = compile expr ++ [IReturn]
 
-showInstruction :: Instruction -> String
-showInstruction (IPushSym s) = "PUSH_SYM " ++ s
-showInstruction (IPushInt i) = "PUSH_INT " ++ show i
-showInstruction (IPushFloat f) = "PUSH_FLOAT " ++ show f
-showInstruction (IPushBool b) = "PUSH_BOOL " ++ show b
-showInstruction (IPushChar c) = "PUSH_CHAR " ++ show c
-showInstruction (IPushString s) = "PUSH_STRING " ++ s
-showInstruction IPushNull = "PUSH_NULL"
-showInstruction (IBuildList n) = "BUILD_LIST " ++ show n
-showInstruction IUnaryNot = "UNRAY_NOT"
-showInstruction IUnaryMinus = "UNARY_MINUS"
-showInstruction (IBinaryOp op) = "BINARY_OP " ++ show op
-showInstruction (IJumpIfFalse n) = "JUMP_IF_FALSE " ++ show n
-showInstruction (IJump n) = "JUMP " ++ show n
-showInstruction (ICallFunc name n) = "CALLFUNC " ++ name ++ " " ++ show n
-showInstruction (IFuncDefStart name args) = "FUNC_DEF_START " ++ name ++ " " ++ show args
-showInstruction (IFuncDefEnd name) = "FUNC_DEF_END " ++ name
-showInstruction IStartLoop = "STARTLOOP"
-showInstruction IEndLoop = "ENDLOOP"
-showInstruction IReturn = "RETURN"
-
-printCompilationResult :: [Instruction] -> IO ()
-printCompilationResult instrs = mapM_ (putStrLn . showInstruction) instrs
+compilePrint :: AST -> [Instruction]
+compilePrint expr = compile expr ++ [IPrint]

@@ -28,6 +28,7 @@ FLAG_OTHER_USER = --allow-different-user
 all:
 	$(STACK_BUILD) $(FLAG_OTHER_USER)
 	cp $(PATH_BINARY)/bin/$(NAME)-exe ./$(NAME)
+	cp $(PATH_BINARY)/bin/$(NAME_VM)-exe ./myvm
 
 build_vm: clean_vm
 	$(STACK_BUILD) $(FLAG_OTHER_USER)
@@ -45,13 +46,16 @@ tests: clean
 	stack test --coverage
 	stack hpc report --all --destdir $(TEST_PATH)
 
+tests-functional:
+	python3 test/functional_tests.py
+
 clean_vm:
 	$(RM) $(NAME_VM)-exe
 
 clean:
 	stack clean $(FLAG_OTHER_USER)
 
-fclean: clean
+fclean: clean clean_vm
 	$(RM) $(NAME)
 	$(RM) $(NAME)-exe
 	$(RM) myvm
@@ -69,4 +73,4 @@ build:
 run:
 	@docker run -it $(IMAGE_NAME) /bin/bash
 
-.PHONY: all benchmark tests clean fclean re build run
+.PHONY: all benchmark tests clean fclean re build run clean_vm build_vm

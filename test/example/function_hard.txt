@@ -1,0 +1,20 @@
+func main(x y z) {
+	if (x == 5) {
+		if (y == 10) {
+			if (z == 20) {
+				print("no");
+			} else {
+				print("yes");
+			}
+		} else {
+			print("no");
+		}
+	} else {
+		print("no");
+	}
+}
+
+a = 5;
+b = 10;
+c = 100;
+main(a, b, c);

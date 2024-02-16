@@ -1,0 +1,56 @@
+program            ::= statement+ ;
+
+statement          ::= assignment
+                  | expression
+                  | function_definition
+                  | if_else_statement
+                  | while_loop
+                  | return_statement ;
+
+assignment         ::= "var" symbol "=" expression ";" ;
+
+expression         ::= term { binary_operator term } ;
+
+term               ::= symbol
+                  | constant
+                  | "(" expression ")"
+                  | unary_operator term
+                  | function_call ;
+
+symbol             ::= [a-zA-Z][a-zA-Z0-9_]* ;
+
+constant           ::= int_literal
+                  |    float_literal
+                  |    bool_literal
+                  |    string_literal
+                  |    null_literal ;
+
+int_literal        ::= [0-9]+ ;
+
+float_literal      ::= [0-9]+ "." [0-9]+ ;
+
+bool_literal       ::= "true" | "false" ;
+
+any_character      ::= [a-zA-Z0-9_ ] ;
+
+string_literal     ::= "\"" any_character* "\"";
+
+null_literal       ::= "null" ;
+
+binary_operator    ::= "+" | "-" | "*" | "/" | "%" | "&&" | "||" | "!=" | "<" | "<=" | ">" | ">=" ;
+
+unary_operator     ::= "-" ;
+
+function_call      ::= symbol "(" [ expression { "," expression } ] ")" ;
+
+function_definition ::= "func" symbol "(" [ parameter_list ] ")" block ;
+
+parameter_list     ::= symbol { "," symbol } ;
+
+block              ::= "{" { statement } "}" ;
+
+if_else_statement  ::= "if" "(" expression ")" block [ "else" block ] ;
+
+while_loop         ::= "while" "(" expression ")" block ;
+
+return_statement   ::= "return" expression ";" ;

@@ -50,6 +50,7 @@ encodeInstruction (IFuncDefEnd name) = pack (0x71 : stringToBytes name)
 encodeInstruction IStartLoop = pack [0x80]
 encodeInstruction IEndLoop = pack [0x81]
 encodeInstruction IReturn = pack [0x90]
+encodeInstruction (IPrint) = pack [0xA0]
 
 encodeBinaryOp :: BinaryOperator -> Word8
 encodeBinaryOp PlusOp = 0x01

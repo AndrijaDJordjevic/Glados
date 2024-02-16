@@ -17,6 +17,7 @@ import System.Environment (getArgs)
 import System.Exit (ExitCode (..), exitSuccess, exitWith)
 import Token (parseInput)
 import TokenToAst (transformTokensToAST)
+import TranspilerPython (compileAstToPython, processPythonOutput)
 import Types (Token)
 
 main :: IO ()
@@ -62,8 +63,11 @@ processTextMode conf (Left tokens) =
 processTextMode _ (Right err) = putStrLn $ "Parsing failed. Remaining input: " ++ err
 
 processPythonMode :: Conf -> Either [Token] String -> IO ()
-processPythonMode _ (Left tokens) =
+processPythonMode conf (Left tokens) =
   case transformTokensToAST tokens of
-    Right asts -> putStrLn $ "Python mode not implemented yet, asts: " ++ show asts -- TODO: Implement python mode
+    Right asts -> do
+      let pythonCode = unlines $ map compileAstToPython asts
+      processPythonOutput (output conf) pythonCode
     Left err -> putStrLn $ "AST Transformation failed: " ++ err
 processPythonMode _ (Right err) = putStrLn $ "Parsing failed. Remaining input: " ++ err
+

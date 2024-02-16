@@ -42,10 +42,11 @@ parseInstruction (Sym "for" : rest) = parseForStatement rest
 parseInstruction (Sym "return" : rest) = parseReturnStatement rest
 parseInstruction (Sym "func" : rest) = parseFunction rest
 parseInstruction (Sym "print" : Special OpenParenthesis : rest) =
-  case parseExpression rest of
-    Right (expr, Special CloseParenthesis : Special Semicolon : remainingTokens) ->
-      Right (Print expr, remainingTokens)
-    _ -> Left "Syntax error in print statement"
+  parseExpression rest >>= \(expr, remaining) ->
+    case remaining of
+      (Special CloseParenthesis : Special Semicolon : restAfterParenthesis) ->
+        Right (Print expr, restAfterParenthesis)
+      _ -> Left "Expected ')' and ';' after print expression"
 parseInstruction (Sym a : rest) =
   parseAssignment (Sym a : rest) >>= \(assigment, remaining) ->
     case remaining of
@@ -61,12 +62,18 @@ parseAssignment (Sym name : Special OpenParenthesis : rest) =
       Right args2 -> Right (FunctionCall name args2, restAfterParenthesis)
       Left err -> Left err
     _ -> Left "Expected ')' at the end of the function call"
-parseAssignment (Sym name : BinaryOperator Equal : rest) =
-  parseExpression rest >>= \(expr, remaining) -> Right (Binary Equal (Symbol name) expr, remaining)
+parseAssignment (Sym name : BinaryOperator Equal : rest) = parseExpression rest >>= \(expr, remaining) -> Right (Binary Equal (Symbol name) expr, remaining)
 parseAssignment tokens = Left $ "Invalid assignment:\t" ++ show tokens
 
 parseExpression :: [Token] -> Either String (AST, [Token])
-parseExpression = parseBinaryExpression
+parseExpression (Sym funcName : Special OpenParenthesis : rest) =
+  case splitOnToken (Special CloseParenthesis) rest of
+    ([], Special CloseParenthesis : restAfterParenthesis) -> Right (FunctionCall funcName [], restAfterParenthesis)
+    (args, Special CloseParenthesis : restAfterParenthesis) -> case getFunctionCallArgs args of
+      Right args2 -> Right (FunctionCall funcName args2, restAfterParenthesis)
+      Left err -> Left err
+    _ -> Left "Expected ')' at the end of the function call"
+parseExpression tokens = parseBinaryExpression tokens
 
 parseBinaryExpression :: [Token] -> Either String (AST, [Token])
 parseBinaryExpression tokens =
@@ -86,11 +93,16 @@ parseTerm tokens =
 
 parseTermOperators :: [Token] -> AST -> Either String (AST, [Token])
 parseTermOperators (BinaryOperator op : rest) left =
-  parseFactor rest >>= \(right, rest1) ->
-    parseTermOperators rest1 (Binary op left right)
+  parseFactor rest >>= \(right, rest1) -> parseTermOperators rest1 (Binary op left right)
 parseTermOperators rest left = Right (left, rest)
 
 parseFactor :: [Token] -> Either String (AST, [Token])
+parseFactor (Sym funcName : Special OpenParenthesis : rest) = case splitOnToken (Special CloseParenthesis) rest of
+  ([], Special CloseParenthesis : restAfterParenthesis) -> Right (FunctionCall funcName [], restAfterParenthesis)
+  (args, Special CloseParenthesis : restAfterParenthesis) -> case getFunctionCallArgs args of
+    Right args2 -> Right (FunctionCall funcName args2, restAfterParenthesis)
+    Left err -> Left err
+  _ -> Left "Expected ')' at the end of the function call"
 parseFactor (Const c : rest) = Right (Constant c, rest)
 parseFactor (Sym s : rest) = Right (Symbol s, rest)
 parseFactor (Special OpenParenthesis : rest) =

@@ -34,6 +34,7 @@ data Instruction
   | IFuncDefEnd String
   | IStartLoop
   | IEndLoop
+  | IPrint
   | IReturn
   deriving (Show, Eq)
 
@@ -48,19 +49,19 @@ data Constant
 
 data BinaryOperator
   = PlusOp
-  | MinusOp
-  | Multiply
-  | Divide
-  | Modulo
-  | And
-  | Or
-  | Equal
-  | Equality
-  | NotEqual
-  | LessThan
-  | LessThanOrEqual
-  | GreaterThan
-  | GreaterThanOrEqual
+    | MinusOp
+    | Multiply
+    | Divide
+    | Modulo
+    | And
+    | Or
+    | Equal
+    | Equality
+    | NotEqual
+    | LessThan
+    | LessThanOrEqual
+    | GreaterThan
+    | GreaterThanOrEqual
   deriving (Show, Eq)
 
 data UnaryOperator

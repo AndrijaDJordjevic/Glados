@@ -1,0 +1,6 @@
+func main(x) {
+	return x;
+}
+
+a = 5;
+print(main(a));

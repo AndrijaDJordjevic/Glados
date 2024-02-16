@@ -1,0 +1,8 @@
+b = 10;
+a = 5;
+b = b + a;
+b = b + 1;
+a = a + b;
+a = a + 1;
+c = b - a;
+print(c);

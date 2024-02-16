@@ -26,15 +26,24 @@ source-repository head
 library
   exposed-modules:
       Arguments
+      Builtins.FunctionOperations
+      Builtins.PrintStack
+      Builtins.StackOperations
+      Builtins.SymValBuiltins
       CompilatorBytecode
       Compiler
+      DecodeInstruction
+      ExecuteInstructions
       FileReader
       FileWriter
       Interpreter
+      ParseInstructions
       Parser
       Token
       TokenToAst
+      TranspilerPython
       Types
+      VMTypes
   other-modules:
       Paths_GLADOS
   autogen-modules:
@@ -83,7 +92,14 @@ executable glados-exe
 executable vm-exe
   main-is: vm.hs
   other-modules:
+      Builtins.FunctionOperations
+      Builtins.PrintStack
+      Builtins.StackOperations
+      Builtins.SymValBuiltins
       DecodeInstruction
+      ExecuteInstructions
+      ParseInstructions
+      VMTypes
       Paths_GLADOS
   autogen-modules:
       Paths_GLADOS
